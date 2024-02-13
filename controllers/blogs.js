@@ -24,6 +24,7 @@ router.post("/", async (request, response) => {
         user: user.id
     });
     const savedBlog = await blog.save();
+    await savedBlog.populate("user", {username: 1, name: 1});
 
     user.blogs = user.blogs.concat(savedBlog._id);
     await user.save();
@@ -76,7 +77,7 @@ router.put("/:id", async (request, response) => {
         url: body.url,
         likes: body.likes
     };
-    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, edit, {new: true, runValidators: true, context: "query"});
+    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, edit, {new: true, runValidators: true, context: "query"}).populate("user", {username: 1, name: 1});
 
     user.blogs = user.blogs.filter(id => id.toString() !== blog.id);
     await user.save();
